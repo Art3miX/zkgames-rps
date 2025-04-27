@@ -6,6 +6,7 @@ fn main() {
         "../zk-games-programs/login",
         BuildArgs {
             docker: true,
+            output_directory: Some("../zk-games-programs/login/elf".to_string()),
             ..Default::default()
         },
     );

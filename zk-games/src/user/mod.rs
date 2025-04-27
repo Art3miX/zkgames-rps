@@ -32,7 +32,7 @@ fn create_account_hashes(username: &str, password: &str) -> ([u8; 32], [u8; 32])
     (secret, login_hash)
 }
 
-fn save_secret(username: &str, secret: [u8; 32]) {
+fn save_secret(username: &str, secret: [u8; 32]) -> Result<(), String> {
     let user_local_path = Path::new(LOCAL_PLAYERS_PATH).join(username);
 
     if !user_local_path.exists() {
@@ -41,16 +41,21 @@ fn save_secret(username: &str, secret: [u8; 32]) {
 
     let filename = user_local_path.join(SECRET_FILENAME);
 
+    if filename.exists() {
+        return Err("Error: User already exists".to_string());
+    }
+
     // Save games to a file or database
     let file = File::create(filename).unwrap();
     let mut writer = BufWriter::new(file);
     writer.write(&secret).unwrap();
     writer.flush().unwrap();
+    Ok(())
 }
 
-pub fn create_account(username: &str, password: &str) -> [u8; 32] {
+pub fn create_account(username: &str, password: &str) -> Result<[u8; 32], String> {
     let (secret, login_hash) = create_account_hashes(username, password);
 
-    save_secret(username, secret);
-    login_hash
+    save_secret(username, secret)?;
+    Ok(login_hash)
 }

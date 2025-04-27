@@ -37,7 +37,7 @@ mod test {
         let password = "some_password1234";
 
         // Generate hashes for username
-        let login_hash = user::create_account(username, password);
+        let login_hash = user::create_account(username, password).unwrap();
         // Save the public login_hash to our local data
         save_public_login_hash(username, login_hash);
 
