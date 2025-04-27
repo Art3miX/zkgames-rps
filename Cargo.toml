@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members  = ["cli"]
+members  = ["rps-game-client", "test-game", "zk-games", "zk-games-programs/login"]
 
 [workspace.package]
 authors = ["Art3miX <r3mix.il@gmail.com>"]
@@ -20,3 +20,11 @@ incremental      = false
 overflow-checks = true
 
 [workspace.dependencies]
+zk-games = { path = "zk-games" }
+
+sp1-zkvm     = "4.0.0"
+sp1-sdk      = "4.0.0"
+sp1-verifier = "4.0.0"
+sp1-build    = "4.0.0"
+
+sha2 = { version = "0.10" }

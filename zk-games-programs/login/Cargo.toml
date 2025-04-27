@@ -1,0 +1,11 @@
+[package]
+name              = "login-zk-program"
+version           = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+publish           = false
+
+[dependencies]
+sp1-zkvm.workspace = true
+zk-games.workspace = true
+sha2.workspace     = true
