@@ -6,13 +6,11 @@ mod test {
         path::Path,
     };
 
-    use serde::Deserialize;
-    use sp1_sdk::{include_elf, Prover, ProverClient, SP1ProofWithPublicValues, SP1Stdin};
+    use sp1_sdk::{include_elf, Prover, ProverClient, SP1Stdin};
 
-    use sp1_verifier::{Groth16Verifier, GROTH16_VK_BYTES};
     use zk_games::{
         user,
-        zk::{self, LoginInput, LoginResult},
+        zk::{self, LoginPublic},
     };
 
     const LOGIN_ELF: &[u8] = include_elf!("login-zk-program");
@@ -83,7 +81,7 @@ mod test {
             .verify(&proof, &vk)
             .expect("Groth16 proof verification failed");
 
-        let res = proof.public_values.read::<LoginResult>();
+        let res = proof.public_values.read::<LoginPublic>();
 
         println!("Login Result: {:?}", res);
     }
