@@ -7,6 +7,7 @@ use game::{Choice, Game};
 use games_data::GamesData;
 use menu::show_main_menu;
 use user::handle_user_not_logged_in;
+use zk_games_types::GameResult;
 
 #[derive(Default)]
 struct Data {
@@ -45,10 +46,17 @@ impl Data {
 
     fn join_game(&mut self, id: u128, choice: Choice) {
         self.game_data.join_game(id, self.user.clone(), choice);
-        self.game_data.calculate_result(id);
         self.game_data.save();
     }
+
+    fn calculate_game_result(&mut self, id: u128) -> Result<GameResult, String> {
+        let result = self.game_data.calculate_result(id)?;
+        self.game_data.save();
+        Ok(result)
+    }
 }
+
+pub const GAME_CLIENT_ID: &str = "GCLIENT_ID";
 
 fn main() {
     println!("Welcome to ZK RPS CLI!");

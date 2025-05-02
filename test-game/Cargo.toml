@@ -5,11 +5,12 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-zk-games     = { path = "../zk-games" }
-serde        = { version = "1.0", features = ["derive"] }
-serde_bytes  = { version = "0.11.17" }
-sp1-sdk      = { workspace = true }
-sp1-verifier = { workspace = true }
+zk-games       = { workspace = true }
+zk-games-types = { workspace = true }
+serde          = { version = "1.0", features = ["derive"] }
+serde_bytes    = { version = "0.11.17" }
+sp1-sdk        = { workspace = true }
+sp1-verifier   = { workspace = true }
 
 [build-dependencies]
 sp1-build.workspace = true

@@ -1,5 +1,5 @@
 [package]
-name              = "login-zk-program"
+name              = "rps-basic-zk-program"
 version           = "0.1.0"
 authors.workspace = true
 edition.workspace = true

@@ -8,12 +8,11 @@ mod test {
 
     use sp1_sdk::{include_elf, Prover, ProverClient, SP1Stdin};
 
-    use zk_games::{
-        user,
-        zk::{self, LoginPublic},
-    };
+    use zk_games::user;
+    use zk_games_types::{LoginInput, LoginPublic};
 
     const LOGIN_ELF: &[u8] = include_elf!("login-zk-program");
+    // const RPS_BASIC_ELF: &[u8] = include_elf!("rps-basic-zk-program");
 
     fn save_public_login_hash(username: &str, login_hash: [u8; 32]) {
         let user_local_path = Path::new(user::PUBLIC_PLAYERS_PATH).join(username);
@@ -55,7 +54,7 @@ mod test {
             .join(user::SECRET_FILENAME);
         let my_secret = std::fs::read(secret_path).unwrap();
 
-        let login_input = zk::LoginInput {
+        let login_input = LoginInput {
             secret: *my_secret
                 .as_slice()
                 .first_chunk::<32>()

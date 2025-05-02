@@ -59,3 +59,5 @@ pub fn create_account(username: &str, password: &str) -> Result<[u8; 32], String
     save_secret(username, secret)?;
     Ok(login_hash)
 }
+
+

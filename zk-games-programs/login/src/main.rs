@@ -2,7 +2,7 @@
 sp1_zkvm::entrypoint!(main);
 
 use sha2::{Digest, Sha256};
-use zk_games::zk::{LoginInput, LoginPublic};
+use zk_games_types::{LoginInput, LoginPublic};
 
 fn main() {
     let login_input = sp1_zkvm::io::read::<LoginInput>();

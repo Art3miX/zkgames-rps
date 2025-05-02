@@ -4,8 +4,13 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use zk_games::games::rps_basic::{calculate_result, generate_basic_game_proof};
+use zk_games_types::{GameResult, RpsBasicPublic};
 
-use crate::game::{Choice, Game, GameResult};
+use crate::{
+    game::{Choice, Game, Player2Info},
+    GAME_CLIENT_ID,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct GamesData {
@@ -13,6 +18,7 @@ pub struct GamesData {
 }
 
 const GAMES_DATA_FILE: &str = "data/games.json";
+const GAME_TIMEOUT: u64 = 600000; 
 
 impl Default for GamesData {
     fn default() -> Self {
@@ -40,7 +46,7 @@ impl GamesData {
         self.games.push(game);
     }
 
-    pub fn _get_game(&self, id: u128) -> Option<&Game> {
+    pub fn get_game(&self, id: u128) -> Option<&Game> {
         self.games.iter().find(|game| game.id == id)
     }
 
@@ -52,11 +58,18 @@ impl GamesData {
         &self.games
     }
 
-    pub fn join_game(&mut self, id: u128, player2: String, choice: Choice) {
+    pub fn join_game(&mut self, id: u128, player2_username: String, choice: Choice) {
         if let Some(game) = self.get_game_mut(id) {
-            if game.player2.is_none() && game.player1 != player2 {
-                game.player2 = Some(player2.clone());
-                game.player2_choice = Some(choice);
+            if game.player2.is_none() && game.player1.username != player2_username {
+                game.player2 = Some(Player2Info {
+                    username: player2_username,
+                    choice,
+                });
+                let curr_time = std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs();
+                game.timeout = Some(curr_time + GAME_TIMEOUT);
             }
         }
     }
@@ -71,22 +84,33 @@ impl GamesData {
         writer.flush().unwrap();
     }
 
-    pub fn calculate_result(&mut self, id: u128) {
+    pub fn calculate_result(&mut self, id: u128) -> Result<GameResult, String> {
         if let Some(game) = self.get_game_mut(id) {
-            if let Some(player2_choice) = game.player2_choice.clone() {
-                let player1_choice = game.player1_choice.clone();
+            // Generate choice proof locally
+            let (_proof, public_values, _vk) = generate_basic_game_proof(
+                &game.player1.username,
+                GAME_CLIENT_ID,
+                id,
+                game.player1.choice_hash,
+            )
+            .unwrap();
 
-                if player1_choice == player2_choice {
-                    game.result = Some(GameResult::Draw);
-                } else if (player1_choice == Choice::Rock && player2_choice == Choice::Scissors)
-                    || (player1_choice == Choice::Paper && player2_choice == Choice::Rock)
-                    || (player1_choice == Choice::Scissors && player2_choice == Choice::Paper)
-                {
-                    game.result = Some(GameResult::Player1);
-                } else {
-                    game.result = Some(GameResult::Player2);
-                }
-            }
+            // TODO: Verify the proof
+            // Groth16Verifier::verify(&proof, &public_values, &vk, *sp1_verifier::GROTH16_VK_BYTES)
+            //     .unwrap();
+
+            // Get the game result
+            let public_values: RpsBasicPublic = public_values.into();
+            let game_result = calculate_result(
+                public_values.choice as u8,
+                game.player2.clone().unwrap().choice as u8,
+            );
+
+            // Update the game result
+            game.result = Some(game_result.clone());
+            Ok(game_result)
+        } else {
+            return Err(format!("Game with ID {} not found", id));
         }
     }
 }

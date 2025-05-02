@@ -7,18 +7,21 @@ use std::{
 use dialoguer::{theme::ColorfulTheme, Input, Password, Select};
 use sp1_sdk::{Prover, ProverClient, SP1Stdin};
 use strum::{Display, EnumString, FromRepr, VariantArray};
-use zk_games::{user, zk::LoginPublic};
+use zk_games::user;
 
 use rand::{distr::Alphanumeric, Rng};
+use zk_games_types::{LoginInput, LoginPublic};
 
 #[derive(Debug, PartialEq, Eq, VariantArray, EnumString, Display, FromRepr)]
 enum UserMenu {
+    #[strum(to_string = "Register")]
+    Register,
     #[strum(to_string = "Log in")]
     Login,
     #[strum(to_string = "Log in with password")]
     LoginPass,
-    #[strum(to_string = "Register")]
-    Register,
+    #[strum(to_string = "Log in demo")]
+    LoginDemo,
 }
 
 pub(crate) fn handle_user_not_logged_in() -> String {
@@ -32,6 +35,10 @@ pub(crate) fn handle_user_not_logged_in() -> String {
     );
 
     match selection {
+        Some(UserMenu::LoginDemo) => {
+            let username = get_user("Username:");
+            log_in_demo(username)
+        }
         Some(UserMenu::Login) => {
             let username = get_user("Username:");
             log_in(username)
@@ -74,23 +81,30 @@ fn get_password(with_confirm: bool) -> String {
     pass_editor.interact().unwrap()
 }
 
-// TODO: Implement the login logic
+fn log_in_demo(username: String) -> String {
+    // Simply verify we have a secret for this user (exists in our db)
+    match zk_games::zk::get_secret(&username) {
+        Ok(_) => (),
+        Err(_) => {
+            println!("Error: {} doesn't exists", username);
+            return handle_user_not_logged_in();
+        }
+    };
+
+    username
+}
+
 fn log_in(username: String) -> String {
     println!("Logging in...");
 
     // Read secret from local file
-    let secret_path = Path::new(user::LOCAL_PLAYERS_PATH)
-        .join(&username)
-        .join(user::SECRET_FILENAME);
-    if !secret_path.exists() {
-        println!("Error: Secret doesn't exists, please try to recover");
-        return handle_user_not_logged_in();
-    }
-    let my_secret = *std::fs::read(secret_path)
-        .unwrap()
-        .as_slice()
-        .first_chunk::<32>()
-        .expect("secret should be length of 32");
+    let my_secret = match zk_games::zk::get_secret(&username) {
+        Ok(secret) => secret,
+        Err(e) => {
+            println!("Error: {}", e);
+            return handle_user_not_logged_in();
+        }
+    };
 
     // Read login_hash from public file (chain)
     let login_hash = match get_login_hash(&username) {
@@ -108,7 +122,7 @@ fn log_in(username: String) -> String {
         .map(char::from)
         .collect();
 
-    let login_proof_input = zk_games::zk::LoginInput {
+    let login_proof_input = LoginInput {
         secret: my_secret,
         login_hash,
         random_string: random_string.clone(),
@@ -153,8 +167,8 @@ fn log_in(username: String) -> String {
 fn log_in_with_pass(username: String, password: String) -> String {
     println!("Logging in with password...");
 
-    let _ = match user::create_account(username.as_str(), password.as_str()) {
-        Ok(hash) => hash,
+    match user::create_account(username.as_str(), password.as_str()) {
+        Ok(_) => (),
         Err(e) => {
             println!("Error: {}", e);
             return handle_user_not_logged_in();

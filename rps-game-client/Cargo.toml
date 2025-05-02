@@ -4,12 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dialoguer  = "0.11"
-strum      = { version = "0.27", features = ["derive"] }
-serde      = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
-zk-games   = { workspace = true }
-rand       = { version = "0.9.1" }
+dialoguer      = "0.11"
+strum          = { version = "0.27", features = ["derive"] }
+serde          = { version = "1.0", features = ["derive"] }
+serde_json     = { version = "1.0" }
+zk-games       = { workspace = true }
+zk-games-types = { workspace = true }
+rand           = { version = "0.9.1" }
 
-sp1-sdk = { workspace = true }
+sp1-sdk      = { workspace = true }
 sp1-verifier = { workspace = true }
