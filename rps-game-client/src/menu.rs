@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use dialoguer::{theme::ColorfulTheme, Select};
 use strum::{Display, EnumString, FromRepr, VariantArray};
@@ -65,7 +65,7 @@ fn join_game(data: &mut Data) {
             g.result.is_none() && g.player2.is_none() && g.player1.username != data.get_user()
         })
         .enumerate()
-        .collect::<HashMap<_, _>>();
+        .collect::<BTreeMap<_, _>>();
 
     if available_games.is_empty() {
         println!("No games available to join.");
@@ -76,7 +76,7 @@ fn join_game(data: &mut Data) {
     let selections = available_games
         .iter()
         .map(|(num, g)| (num, format!("Id: {}, Player: {}", g.id, g.player1.username)))
-        .collect::<HashMap<_, _>>();
+        .collect::<BTreeMap<_, _>>();
 
     let selection = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Select a game to join")
@@ -87,6 +87,7 @@ fn join_game(data: &mut Data) {
 
     match selection {
         Some(game_num) => {
+            let game_num = selections.len() - game_num - 1;
             let game_id = available_games.get(&game_num).unwrap().id;
             let choice_selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Please enter your choice")
