@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{env, fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -63,7 +63,7 @@ pub fn generate_basic_game_proof<'a>(
     // Start generating the proof
     let client = ProverClient::builder()
         .network()
-        .private_key("8f7dfd6e9520ef786fc6f332f24f7f508bef46a5e71e289f4a17445e5004f29a")
+        .private_key(&env::var("SP1_NETWORK_PK").unwrap())
         .rpc_url("https://rpc.production.succinct.xyz")
         .build();
     let rps_basic_elf = fs::read(Path::new(

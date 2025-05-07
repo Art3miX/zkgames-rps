@@ -19,6 +19,8 @@ struct Data {
 
 impl Data {
     pub fn init() -> Self {
+        dotenv::dotenv().ok();
+
         let mut data = Data::default();
 
         let username = handle_user_not_logged_in();

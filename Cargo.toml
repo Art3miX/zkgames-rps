@@ -38,7 +38,8 @@ sp1-verifier   = "=4.0.0"
 sp1-build      = "=4.0.0"
 sp1-primitives = "=4.0.0"
 
-sha2 = "0.10.8"
+sha2   = "0.10.8"
+dotenv = "0.15.0"
 
 [patch.crates-io]
 sha2 = { git = "https://github.com/sp1-patches/RustCrypto-hashes", package = "sha2", tag = "patch-sha2-0.10.8-sp1-4.0.0" }
