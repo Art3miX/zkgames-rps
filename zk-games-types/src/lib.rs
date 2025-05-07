@@ -1,3 +1,4 @@
+use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use sp1_primitives::types::Buffer;
 
@@ -41,7 +42,7 @@ pub struct RpsBasicInput {
 }
 
 /// login result we get after verifying the proof
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Encode, Decode, Serialize, Deserialize, Debug)]
 pub struct RpsBasicPublic {
     pub client_pubkey: String,
     pub game_id: u64,
@@ -52,6 +53,12 @@ pub struct RpsBasicPublic {
 
 impl From<Vec<u8>> for RpsBasicPublic {
     fn from(bytes: Vec<u8>) -> Self {
-        Buffer::from(&bytes).read::<RpsBasicPublic>()
+        bincode::decode_from_slice::<RpsBasicPublic, _>(&bytes, bincode::config::standard()).unwrap().0
+    }
+}
+
+impl Into<Vec<u8>> for RpsBasicPublic {
+    fn into(self) -> Vec<u8> {
+        bincode::encode_to_vec(self, bincode::config::standard()).unwrap()
     }
 }

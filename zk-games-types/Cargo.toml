@@ -9,3 +9,4 @@ publish           = false
 serde          = { workspace = true }
 serde_bytes    = { workspace = true }
 sp1-primitives = { workspace = true }
+bincode = "2.0.1"
