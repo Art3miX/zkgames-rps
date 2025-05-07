@@ -18,7 +18,7 @@ pub struct GamesData {
 }
 
 const GAMES_DATA_FILE: &str = "data/games.json";
-const GAME_TIMEOUT: u64 = 600000; 
+const GAME_TIMEOUT: u64 = 600000;
 
 impl Default for GamesData {
     fn default() -> Self {

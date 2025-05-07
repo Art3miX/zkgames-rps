@@ -1,6 +1,4 @@
-use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
-use sp1_primitives::types::Buffer;
 
 /// Once the game is finished, we set who the winner is
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -42,7 +40,7 @@ pub struct RpsBasicInput {
 }
 
 /// login result we get after verifying the proof
-#[derive(Encode, Decode, Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RpsBasicPublic {
     pub client_pubkey: String,
     pub game_id: u64,
@@ -53,12 +51,12 @@ pub struct RpsBasicPublic {
 
 impl From<Vec<u8>> for RpsBasicPublic {
     fn from(bytes: Vec<u8>) -> Self {
-        bincode::decode_from_slice::<RpsBasicPublic, _>(&bytes, bincode::config::standard()).unwrap().0
+        bincode::deserialize::<RpsBasicPublic>(&bytes).unwrap()
     }
 }
 
 impl Into<Vec<u8>> for RpsBasicPublic {
     fn into(self) -> Vec<u8> {
-        bincode::encode_to_vec(self, bincode::config::standard()).unwrap()
+        bincode::serialize(&self).unwrap()
     }
 }
