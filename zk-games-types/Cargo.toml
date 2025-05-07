@@ -7,4 +7,5 @@ publish           = false
 
 [dependencies]
 serde          = { workspace = true }
+serde_bytes    = { workspace = true }
 sp1-primitives = { workspace = true }

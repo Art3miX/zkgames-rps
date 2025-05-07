@@ -43,7 +43,9 @@ pub struct RpsBasicInput {
 /// login result we get after verifying the proof
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpsBasicPublic {
+    pub client_pubkey: String,
     pub game_id: u64,
+    #[serde(with = "serde_bytes")]
     pub choice_hash: [u8; 32],
     pub choice: u8,
 }
@@ -51,7 +53,5 @@ pub struct RpsBasicPublic {
 impl From<Vec<u8>> for RpsBasicPublic {
     fn from(bytes: Vec<u8>) -> Self {
         Buffer::from(&bytes).read::<RpsBasicPublic>()
-        // .unwrap_or_else(|_| panic!("Failed to read RpsBasicPublic from bytes"))
-        // SP1PublicValues::from().read::<RpsBasicPublic>()
     }
 }

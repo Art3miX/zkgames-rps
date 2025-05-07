@@ -20,6 +20,7 @@ fn main() {
         if choice_hash == rps_basic_input.choice_hash {
             // We found the right choice
             sp1_zkvm::io::commit(&RpsBasicPublic {
+                client_pubkey: rps_basic_input.client_pubkey,
                 game_id: rps_basic_input.game_id,
                 choice_hash,
                 choice,

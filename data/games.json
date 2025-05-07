@@ -1,1 +1,1 @@
-{"games":[{"id":0,"player1":{"username":"player1","choice_hash":[208,134,76,1,23,95,153,33,87,165,74,23,52,254,58,94,244,17,183,128,252,186,6,126,4,238,210,245,133,18,54,203]},"player2":{"username":"player2","choice":"Rock"},"timeout":1747202247,"result":null}]}
+{"games":[{"id":0,"player1":{"username":"player1","choice_hash":[208,134,76,1,23,95,153,33,87,165,74,23,52,254,58,94,244,17,183,128,252,186,6,126,4,238,210,245,133,18,54,203]},"player2":{"username":"player2","choice":"Rock"},"timeout":1747202247,"result":"Player1"}]}

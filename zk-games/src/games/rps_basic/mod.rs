@@ -61,12 +61,16 @@ pub fn generate_basic_game_proof<'a>(
     };
 
     // Start generating the proof
-    let client = ProverClient::from_env();
+    let client = ProverClient::builder()
+        .network()
+        .private_key("8f7dfd6e9520ef786fc6f332f24f7f508bef46a5e71e289f4a17445e5004f29a")
+        .rpc_url("https://rpc.production.succinct.xyz")
+        .build();
     let rps_basic_elf = fs::read(Path::new(
         "/mnt/extra/Projects/solana/zk-games/zk-games-programs/rps-basic/elf/rps-basic-zk-program",
     ))
     .unwrap();
-    
+
     let (pk, vk) = client.setup(rps_basic_elf.as_slice());
     println!("vk: {:?}", vk.bytes32());
     let mut stdin = SP1Stdin::new();
