@@ -30,15 +30,15 @@ impl TryFrom<u8> for Choice {
 
 pub fn generate_basic_choice_hash(
     username: &str,
-    client_id: &str,
-    game_id: u128,
+    client_pubkey: &str,
+    game_id: u64,
     choice: u8,
 ) -> Result<[u8; 32], String> {
     let secret = get_secret(username)?;
 
     Ok(Sha256::new()
         .chain_update(secret)
-        .chain_update(client_id)
+        .chain_update(client_pubkey)
         .chain_update(game_id.to_string())
         .chain_update(choice.to_string())
         .finalize()
@@ -47,27 +47,28 @@ pub fn generate_basic_choice_hash(
 
 pub fn generate_basic_game_proof<'a>(
     username: &str,
-    client_id: &str,
-    game_id: u128,
+    client_pubkey: &str,
+    game_id: u64,
     choice_hash: [u8; 32],
 ) -> Result<(Vec<u8>, Vec<u8>, String), String> {
     let secret = get_secret(username)?;
 
     let rps_basic_input = RpsBasicInput {
-        client_id: client_id.to_string(),
+        client_pubkey: client_pubkey.to_string(),
         game_id,
         choice_hash,
         secret,
     };
 
     // Start generating the proof
-    let client = ProverClient::builder().mock().build();
+    let client = ProverClient::from_env();
     let rps_basic_elf = fs::read(Path::new(
         "/mnt/extra/Projects/solana/zk-games/zk-games-programs/rps-basic/elf/rps-basic-zk-program",
     ))
     .unwrap();
-    let (pk, vk) = client.setup(rps_basic_elf.as_slice());
     
+    let (pk, vk) = client.setup(rps_basic_elf.as_slice());
+    println!("vk: {:?}", vk.bytes32());
     let mut stdin = SP1Stdin::new();
     stdin.write(&rps_basic_input);
 
@@ -79,6 +80,7 @@ pub fn generate_basic_game_proof<'a>(
         .expect("Groth16 proof generation failed");
 
     let proof_bytes = proof.bytes();
+    println!("proof: {proof_bytes:?}");
     let public_values = proof.public_values.to_vec();
 
     Ok((proof_bytes, public_values, vk.bytes32()))

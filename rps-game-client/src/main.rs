@@ -9,6 +9,8 @@ use menu::show_main_menu;
 use user::handle_user_not_logged_in;
 use zk_games_types::GameResult;
 
+pub const GAME_CLIENT_PUBKEY: &str = "5tBPvVcG2nn7jUQUW47WDbgUx96TZZ2qfzyfayZDDkbJ";
+
 #[derive(Default)]
 struct Data {
     user: String,
@@ -44,19 +46,17 @@ impl Data {
         game
     }
 
-    fn join_game(&mut self, id: u128, choice: Choice) {
+    fn join_game(&mut self, id: u64, choice: Choice) {
         self.game_data.join_game(id, self.user.clone(), choice);
         self.game_data.save();
     }
 
-    fn calculate_game_result(&mut self, id: u128) -> Result<GameResult, String> {
+    fn calculate_game_result(&mut self, id: u64) -> Result<GameResult, String> {
         let result = self.game_data.calculate_result(id)?;
         self.game_data.save();
         Ok(result)
     }
 }
-
-pub const GAME_CLIENT_ID: &str = "GCLIENT_ID";
 
 fn main() {
     println!("Welcome to ZK RPS CLI!");

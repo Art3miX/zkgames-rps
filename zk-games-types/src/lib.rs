@@ -31,9 +31,9 @@ pub struct LoginPublic {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpsBasicInput {
     /// Client ID
-    pub client_id: String,
+    pub client_pubkey: String,
     /// Game ID
-    pub game_id: u128,
+    pub game_id: u64,
     /// The choice hash we try to prove
     pub choice_hash: [u8; 32],
     /// The secret to prove with
@@ -43,7 +43,7 @@ pub struct RpsBasicInput {
 /// login result we get after verifying the proof
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RpsBasicPublic {
-    pub game_id: u128,
+    pub game_id: u64,
     pub choice_hash: [u8; 32],
     pub choice: u8,
 }

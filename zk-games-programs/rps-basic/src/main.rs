@@ -11,7 +11,7 @@ fn main() {
     for choice in 0..3 {
         let choice_hash = Sha256::new()
             .chain_update(rps_basic_input.secret)
-            .chain_update(rps_basic_input.client_id.clone())
+            .chain_update(rps_basic_input.client_pubkey.clone())
             .chain_update(rps_basic_input.game_id.to_string())
             .chain_update(choice.to_string())
             .finalize()

@@ -3,7 +3,7 @@ use strum::{Display, EnumString, FromRepr, VariantArray};
 use zk_games::games::rps_basic::generate_basic_choice_hash;
 use zk_games_types::GameResult;
 
-use crate::{games_data::GamesData, GAME_CLIENT_ID};
+use crate::{games_data::GamesData, GAME_CLIENT_PUBKEY};
 
 #[derive(
     Serialize, Deserialize, Debug, PartialEq, Eq, VariantArray, EnumString, Display, FromRepr, Clone,
@@ -34,7 +34,7 @@ pub struct Player2Info {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Game {
-    pub id: u128,
+    pub id: u64,
     pub player1: Player1Info,
     pub player2: Option<Player2Info>,
     pub timeout: Option<u64>,
@@ -44,7 +44,8 @@ pub struct Game {
 impl Game {
     pub fn new(games_data: &GamesData, username: String, choice: Choice) -> Self {
         let id = games_data.get_next_id();
-        let choice_hash = generate_basic_choice_hash(&username, GAME_CLIENT_ID, id, choice as u8).unwrap();
+        let choice_hash =
+            generate_basic_choice_hash(&username, GAME_CLIENT_PUBKEY, id, choice as u8).unwrap();
 
         Game {
             id,

@@ -9,7 +9,7 @@ use zk_games_types::{GameResult, RpsBasicPublic};
 
 use crate::{
     game::{Choice, Game, Player2Info},
-    GAME_CLIENT_ID,
+    GAME_CLIENT_PUBKEY,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -34,7 +34,7 @@ impl Default for GamesData {
 }
 
 impl GamesData {
-    pub fn get_next_id(&self) -> u128 {
+    pub fn get_next_id(&self) -> u64 {
         if self.games.is_empty() {
             0
         } else {
@@ -46,11 +46,11 @@ impl GamesData {
         self.games.push(game);
     }
 
-    pub fn get_game(&self, id: u128) -> Option<&Game> {
+    pub fn get_game(&self, id: u64) -> Option<&Game> {
         self.games.iter().find(|game| game.id == id)
     }
 
-    pub fn get_game_mut(&mut self, id: u128) -> Option<&mut Game> {
+    pub fn get_game_mut(&mut self, id: u64) -> Option<&mut Game> {
         self.games.iter_mut().find(|game| game.id == id)
     }
 
@@ -58,7 +58,7 @@ impl GamesData {
         &self.games
     }
 
-    pub fn join_game(&mut self, id: u128, player2_username: String, choice: Choice) {
+    pub fn join_game(&mut self, id: u64, player2_username: String, choice: Choice) {
         if let Some(game) = self.get_game_mut(id) {
             if game.player2.is_none() && game.player1.username != player2_username {
                 game.player2 = Some(Player2Info {
@@ -84,12 +84,12 @@ impl GamesData {
         writer.flush().unwrap();
     }
 
-    pub fn calculate_result(&mut self, id: u128) -> Result<GameResult, String> {
+    pub fn calculate_result(&mut self, id: u64) -> Result<GameResult, String> {
         if let Some(game) = self.get_game_mut(id) {
             // Generate choice proof locally
             let (_proof, public_values, _vk) = generate_basic_game_proof(
                 &game.player1.username,
-                GAME_CLIENT_ID,
+                GAME_CLIENT_PUBKEY,
                 id,
                 game.player1.choice_hash,
             )

@@ -28,7 +28,9 @@ fn generate_login_hash(secret: [u8; 32]) -> [u8; 32] {
 /// Takes username and password and generates a secret and login hash
 fn create_account_hashes(username: &str, password: &str) -> ([u8; 32], [u8; 32]) {
     let secret = generate_secret(username, password);
+    println!("secret: {secret:?}");
     let login_hash = generate_login_hash(secret);
+    println!("login hash: {login_hash:?}");
     (secret, login_hash)
 }
 
